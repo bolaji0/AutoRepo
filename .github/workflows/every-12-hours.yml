@@ -1,0 +1,21 @@
+name: 12-Hour Automated Workflow
+
+on:
+  schedule:
+    # Triggers every 12 hours (at 00:00 and 12:00 UTC)
+    - cron: '0 */12 * * *'
+  # Allows you to manually trigger the workflow anytime from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Run your script
+        run: |
+          echo "Starting automated task..."
+          # Replace the line below with your actual command (e.g., python script.py)
+          echo "Task completed successfully at $(date)"
