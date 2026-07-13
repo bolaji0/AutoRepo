@@ -1,21 +1,42 @@
-name: 12-Hour Automated Workflow
+name: Dynamic Page Generator
 
 on:
   schedule:
-    # Triggers every 12 hours (at 00:00 and 12:00 UTC)
     - cron: '0 */12 * * *'
-  # Allows you to manually trigger the workflow anytime from the Actions tab
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual trigger testing
 
 jobs:
-  run-automation:
+  build-and-commit:
     runs-on: ubuntu-latest
+    
+    # Grants the runner permission to write/push changes back to your repo
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout repository code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run your script
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run generation script
+        run: python generate_pages.py
+
+      - name: Commit and Push Changes
         run: |
-          echo "Starting automated task..."
-          # Replace the line below with your actual command (e.g., python script.py)
-          echo "Task completed successfully at $(date)"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          
+          # Stage the newly created directory changes
+          git add consultation-groups/
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Automated update: Injected JSON-LD schemas into 500 HTML pages"
+            git push
+          fi
+
