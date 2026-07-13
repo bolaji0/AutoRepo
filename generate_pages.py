@@ -1,7 +1,7 @@
 import os
 import random
 
-# Configuration
+# Configuration - Output HTML files now
 OUTPUT_DIR = "consultation-groups"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -30,27 +30,70 @@ for i in range(1, 501):
     comp_name = f"{random.choice(COMPANY_PREFIXES)} {random.choice(COMPANY_SUFFIXES)}"
     
     title = f"{niche} in {city}"
-    filename = f"{OUTPUT_DIR}/group-{i}.md"
+    filename = f"{OUTPUT_DIR}/group-{i}.html" # Changed to .html
     
-    markdown_content = f"""# {title}
-
-Welcome to the official directory for **{title}**.
-
-## Featured Consultation Group
-* **Agency Name:** {comp_name}
-* **Location Focus:** {city}
-* **Core Core competency:** {niche}
-
-## Services Offered
-1. Enterprise Architecture Assessment
-2. Automated Deployment & CI/CD Integration
-3. 24/7 Managed Infrastructure Monitoring
-4. Compliance & Localized Governance Audits
-
-*Generated automatically via GitHub Actions.*
+    # HTML Content with injected B2B High-Intent JSON-LD Schema
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    
+    <!-- JSON-LD Structured Microdata for B2B Crawlers -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "{comp_name}",
+      "description": "Premium enterprise consultation group specializing in {niche} for mid-market and enterprise clients.",
+      "address": {{
+        "@type": "PostalAddress",
+        "addressLocality": "{city.split(',')[0].strip()}",
+        "addressCountry": "{city.split(',')[1].strip()}"
+      }},
+      "knowsAbout": [
+        "{niche}",
+        "Enterprise Software Procurement",
+        "SaaS Integration",
+        "IT Infrastructure Capital Expenditure"
+      ],
+      "potentialAction": {{
+        "@type": "BuyAction",
+        "description": "Actively reviewing vendor quotes and procurement options for enterprise-grade SaaS tooling.",
+        "target": "https://example.com"
+      }}
+    }}
+    </script>
+    
+    <style>
+        body {{ font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #333; }}
+        .card {{ border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: #fafafa; }}
+    </style>
+</head>
+<body>
+    <h1>{title}</h1>
+    <div class="card">
+        <h2>Featured Consultation Group</h2>
+        <p><strong>Agency Name:</strong> {comp_name}</p>
+        <p><strong>Location Focus:</strong> {city}</p>
+        <p><strong>Core Competency:</strong> {niche}</p>
+    </div>
+    
+    <h3>Services Offered</h3>
+    <ul>
+        <li>Enterprise Architecture Assessment</li>
+        <li>Automated Deployment & CI/CD Integration</li>
+        <li>24/7 Managed Infrastructure Monitoring</li>
+        <li>Compliance & Localized Governance Audits</li>
+    </ul>
+    
+    <footer><small>Generated automatically via GitHub Actions.</small></footer>
+</body>
+</html>
 """
     
     with open(filename, "w", encoding="utf-8") as f:
-        f.write(markdown_content)
+        f.write(html_content)
 
-print(f"Successfully generated 500 files in /{OUTPUT_DIR}")
+print(f"Successfully generated 500 HTML files with JSON-LD schemas in /{OUTPUT_DIR}")
